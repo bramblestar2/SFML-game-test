@@ -1,5 +1,6 @@
 #pragma once
 #include "ID.h"
+#include "ActionHandler.h"
 
 class Entity
 {
@@ -27,6 +28,8 @@ protected:
 	//Sets
 	void setID(ID _ID) { entityID = _ID; }
 	void setHeading(DIRECTIONS a) { dir = a; }
+
+	ActionHandler actionHandler;
 
 private:
 	int dir;

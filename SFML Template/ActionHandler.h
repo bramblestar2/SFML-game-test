@@ -1,10 +1,12 @@
 #pragma once
 #include <vector>
 #include <iostream>
+
+enum ACTIONS { MOVE, BREAK, ATTACK };
+
 class ActionHandler
 {
 public:
-	enum ACTIONS { MOVE, BREAK, ATTACK };
 
 	void push_back(ACTIONS a) { actionEvents.push_back(a); }
 	bool poll_events() const { return !actionEvents.empty(); };
