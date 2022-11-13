@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 
-enum ACTIONS { MOVE, BREAK, ATTACK, DIRECTION_CHANGE };
+enum ACTIONS { MOVED, BREAK, ATTACK, DIRECTION_CHANGE, SELECTED_ITEM_CHANGED };
 
 class ActionHandler
 {
