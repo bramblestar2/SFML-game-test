@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "../CustomView.h"
 
 class Window
 {
@@ -21,5 +22,7 @@ private:
 
 	sf::RenderWindow* window;
 	sf::Event event;
+
+	CustomView camera;
 };
 

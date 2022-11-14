@@ -3,6 +3,7 @@
 Window::Window()
 {
 	initWindow();
+	camera = CustomView(sf::Vector2f(0,0), sf::Vector2f(window->getSize()));
 }
 
 Window::~Window()

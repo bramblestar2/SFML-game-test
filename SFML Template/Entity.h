@@ -12,16 +12,16 @@ public:
 	ID getID() const { return entityID; }
 	Vec2i getVelocity() const { return velocity; }
 	int getDirectoin() const { return dir; }
+	ActionHandler getActionHandler() const { return actionHandler; }
 
 	//Sets
 	void setVelocity(Vec2i _vel) { velocity = _vel; }
 
 
-	void update();
-	void updateActions();
+	virtual void update(const double _DT);
+	virtual void updateActions();
 	enum DIRECTIONS {UP, RIGHT, DOWN, LEFT};
 	
-
 protected:
 	//Gets
 
@@ -31,9 +31,11 @@ protected:
 
 	ActionHandler actionHandler;
 
+	virtual void movement(const double _DT);
+	virtual void newAction(ACTIONS);
+	
 private:
 	int dir;
 	Vec2i velocity;
 	ID entityID;
-
 };
