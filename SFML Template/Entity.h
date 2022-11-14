@@ -11,11 +11,14 @@ public:
 	//Gets
 	ID getID() const { return entityID; }
 	Vec2i getVelocity() const { return velocity; }
-	int getDirectoin() const { return dir; }
+	Vec2i getPosition() const { return position; }
+	int getDirection() const { return dir; }
 	ActionHandler getActionHandler() const { return actionHandler; }
 
 	//Sets
 	void setVelocity(Vec2i _vel) { velocity = _vel; }
+	void setPosition(Vec2i a) { position = a; }
+	virtual void updatePosition(const double _DT);
 
 
 	virtual void update(const double _DT);
@@ -28,6 +31,7 @@ protected:
 	//Sets
 	void setID(ID _ID) { entityID = _ID; }
 	void setHeading(DIRECTIONS a) { dir = a; }
+	void move(Vec2i a) { position += a; }
 
 	ActionHandler actionHandler;
 
@@ -37,5 +41,6 @@ protected:
 private:
 	int dir;
 	Vec2i velocity;
+	Vec2i position;
 	ID entityID;
 };

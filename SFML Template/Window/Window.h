@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../CustomView.h"
+#include "../Game.h"
 
 class Window
 {
@@ -23,6 +23,6 @@ private:
 	sf::RenderWindow* window;
 	sf::Event event;
 
-	CustomView camera;
+	Game game;
 };
 

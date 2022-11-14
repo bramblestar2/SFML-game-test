@@ -1,14 +1,19 @@
 #include "CustomView.h"
 
-CustomView::CustomView(sf::Vector2f center, sf::Vector2f size) : sf::View(center, size)
+CustomView::CustomView(sf::Vector2f center, sf::Vector2f size)
 {
+	view = sf::View(center, size);
+
 	toPosition = center;
 	transition = true;
 	transitionSpeed = 0.5f;
 }
 
-CustomView::CustomView() : sf::View(sf::FloatRect(0,0,100,100))
+CustomView::CustomView()
 {
+	view = sf::View(sf::FloatRect(0, 0, 100, 100));
+	transitionSpeed = 0.5f;
+	transition = true;
 }
 
 CustomView::~CustomView()
@@ -17,8 +22,12 @@ CustomView::~CustomView()
 
 void CustomView::update(const double _DT)
 {
-	this->setCenter(lerp(this->getCenter().x, toPosition.x, transitionSpeed),
-					lerp(this->getCenter().y, toPosition.y, transitionSpeed));
+
+	if (transition)
+		view.setCenter(lerp(view.getCenter().x, toPosition.x, transitionSpeed),
+			lerp(view.getCenter().y, toPosition.y, transitionSpeed));
+	else
+		view.setCenter(toPosition);
 }
 
 void CustomView::moveTo(sf::Vector2f a)
@@ -28,7 +37,7 @@ void CustomView::moveTo(sf::Vector2f a)
 
 void CustomView::setSize(sf::Vector2f a)
 {
-	View::setSize(a);
+	view.setSize(a);
 }
 
 float CustomView::lerp(float a, float b, float t)

@@ -8,6 +8,10 @@ Entity::~Entity()
 {
 }
 
+void Entity::updatePosition(const double _DT)
+{
+}
+
 void Entity::update(const double _DT)
 {
 

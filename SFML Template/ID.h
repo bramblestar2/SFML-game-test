@@ -8,6 +8,12 @@ struct Vec2
 
 	Vec2(T _x, T _y) { x = _x; y = _y; }
 	Vec2() { x = 0; y = 0; }
+
+	Vec2& operator+=(const Vec2& right) {
+		this->x += right.x;
+		this->y += right.y;
+		return *this;
+	}
 };
 
 typedef Vec2<float> Vec2f;
@@ -22,6 +28,13 @@ public:
 
 	Vec3(T _x,T _y,T _z) { x = _x, y = _y, z = _z; }
 	Vec3() { x = 0, y = 0, z = 0; }
+
+	Vec3& operator+=(const Vec3& right) {
+		this->x += right.x;
+		this->y += right.y;
+		this->z += right.z;
+		return *this;
+	}
 };
 
 typedef Vec3<float> Vec3f;
@@ -31,7 +44,7 @@ typedef Vec3<int> Vec3i;
 struct ID
 {
 public:
-	ID(const std::string );
+	ID(const std::string);
 	ID();
 	int id;
 	Vec3f color;

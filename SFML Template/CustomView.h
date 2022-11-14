@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-class CustomView : protected sf::View
+class CustomView
 {
 public:
 	CustomView(sf::Vector2f, sf::Vector2f);
@@ -14,11 +14,13 @@ public:
 	void setSize(sf::Vector2f);
 	//Gets
 	float getTransitionSpeed() const { return transitionSpeed; }
-	
+	sf::View getView() const { return view; }
 	
 	void update(const double _DT);
 
 private:
+	sf::View view;
+
 	sf::Vector2f toPosition;
 	bool transition;
 	float transitionSpeed;
