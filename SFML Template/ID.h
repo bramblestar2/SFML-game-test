@@ -14,6 +14,11 @@ struct Vec2
 		this->y += right.y;
 		return *this;
 	}
+
+	bool operator==(const Vec2& right) {
+		return	this->x == right.x &&
+			this->y == right.y;
+	}
 };
 
 typedef Vec2<float> Vec2f;

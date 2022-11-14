@@ -4,21 +4,24 @@
 Game::Game()
 {
 	window = nullptr;
-	
+
 	entities.push_back(new Player());
+	selectedBlockID = 0;
 }
 
 Game::~Game()
 {
 	for (int i = 0; i < entities.size(); i++)
 		delete entities.at(i);
+	for (int i = 0; i < blocks.size(); i++)
+		delete blocks.at(i);
 }
 
 void Game::setWindowPtr(sf::RenderWindow* window)
 {
 	this->window = window;
 	camera = CustomView(sf::Vector2f(0, 0), sf::Vector2f(window->getSize()));
-	camera.setTransitionSpeed(0.1f);
+	camera.setTransitionSpeed(0.03f);
 	camera.smoothTransition(true);
 }
 
@@ -31,9 +34,51 @@ void Game::update(const double _DT)
 
 		for (int i = 0; i < entities.size(); i++)
 		{
-			
 			entities.at(i)->update(_DT);
-			entities.at(i)->updatePosition(_DT);
+
+			bool canMove = true;
+			for (int k = 0; k < blocks.size(); k++)
+			{
+				bool inDistanceOne = checkDistance(entities.at(i)->getPosition(), blocks.at(k)->getPosition(), 20.f);
+				
+				if (inDistanceOne)
+				{
+					bool inDistanceTwo = checkDistance(entities.at(i)->getPosition(), blocks.at(k)->getPosition(), 5.f);
+
+					int xDistance = blocks.at(k)->getPosition().x - entities.at(i)->getPosition().x;
+					int yDistance = blocks.at(k)->getPosition().y - entities.at(i)->getPosition().y;
+					float distance = sqrt(pow(xDistance, 2) + pow(yDistance, 2));
+					
+					if (blocks.at(k)->getID().id == 0)
+						blocks.at(k)->changeBrightness((1 / distance) * 100);
+					else if (blocks.at(k)->getID().id == 1)
+						blocks.at(k)->changeBrightness((1/distance) * 30);
+
+					if (inDistanceTwo)
+					{
+
+						//Brightness of block
+						//Uses the distance from the player
+
+						if (canMove && blocks.at(k)->getID().id != 1)
+						{
+							Entity::DIRECTIONS dir = Entity::UP;
+							if (entities.at(i)->getDirection() == Entity::UP)
+								dir = Entity::UP;
+							else if (entities.at(i)->getDirection() == Entity::DOWN)
+								dir = Entity::DOWN;
+							else if (entities.at(i)->getDirection() == Entity::LEFT)
+								dir = Entity::LEFT;
+							else if (entities.at(i)->getDirection() == Entity::RIGHT)
+								dir = Entity::RIGHT;
+
+							canMove = !willCollide(Vec2i(xDistance, yDistance), dir);
+						}
+					}
+				}
+			}
+			if (canMove)
+				entities.at(i)->updatePosition(_DT);
 
 			if (entities.at(i)->getID().getType() == "Player")
 			{
@@ -41,21 +86,22 @@ void Game::update(const double _DT)
 				camera.moveTo(sf::Vector2f(pos.x * 20, pos.y * 20));
 			}
 
-			//Check the type and update accordingly
-			for (int k = 0; k < entities.size(); k++)
-			{
-				if (k != i)
-				{
-					if (entities.at(k)->getID().getType() == "Player")
-					{
-						
-					}
-					else if (entities.at(k)->getID().getType() == "Enemy")
-					{
 
-					}
-				}
-			}
+			//Check the type and update accordingly
+			//for (int k = 0; k < entities.size(); k++)
+			//{
+			//	if (k != i)
+			//	{
+			//		if (entities.at(k)->getID().getType() == "Player")
+			//		{
+			//			
+			//		}
+			//		else if (entities.at(k)->getID().getType() == "Enemy")
+			//		{
+			//
+			//		}
+			//	}
+			//}
 		}
 	}
 }
@@ -69,6 +115,58 @@ void Game::updateSFMLEvents(sf::Event event, const double _DT)
 			//Follow mouse
 			//camera.moveTo(sf::Vector2f(sf::Mouse::getPosition(*window)));
 		}
+
+		if (event.type == sf::Event::KeyPressed)
+		{
+			if (event.key.code == sf::Keyboard::Left)
+			{
+				if (selectedBlockID > 0)
+					selectedBlockID--;
+			}
+			if (event.key.code == sf::Keyboard::Right)
+			{
+				if (selectedBlockID < 1)
+					selectedBlockID++;
+			}
+		}
+
+		if (event.type == sf::Event::MouseButtonPressed)
+		{
+			sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+			Vec2i point(round((mousePos.x) / 20), round((mousePos.y) / 20));
+
+			if (event.mouseButton.button == sf::Mouse::Left)
+			{
+				bool canPlace = true;
+				
+				for (int i = 0; i < blocks.size() && canPlace; i++)
+				{
+					canPlace = !(blocks.at(i)->getPosition() == point);
+					for (int k = 0; k < entities.size() && canPlace; k++)
+						canPlace = !(entities.at(k)->getPosition() == point);
+				}
+
+				if (canPlace)
+				{
+					blocks.push_back(new Block(point));
+					ID id = blocks.at(blocks.size() - 1)->getID();
+					id.id = selectedBlockID;
+					blocks.at(blocks.size() - 1)->setID(id);
+				}
+			}
+			else if (event.mouseButton.button == sf::Mouse::Right)
+			{
+				for (int i = 0; i < blocks.size(); i++)
+				{
+					if (blocks.at(i)->getPosition() == point)
+					{
+						delete blocks.at(i);
+						blocks.erase(blocks.begin() + i);
+						break;
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -76,6 +174,25 @@ void Game::render()
 {
 	if (window != nullptr)
 	{
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			sf::RectangleShape blockShape;
+			blockShape.setSize(sf::Vector2f(20, 20));
+			blockShape.setOrigin(blockShape.getSize().x / 2, blockShape.getSize().y / 2);
+
+			blockShape.setPosition(blocks.at(i)->getPosition().x * 20,
+								   blocks.at(i)->getPosition().y * 20);
+
+			blockShape.setFillColor(sf::Color(
+				blocks.at(i)->getID().color.x,
+				blocks.at(i)->getID().color.y,
+				blocks.at(i)->getID().color.z
+			));
+
+
+
+			window->draw(blockShape);
+		}
 
 		for (int i = 0; i < entities.size(); i++)
 		{
@@ -103,14 +220,14 @@ void Game::render()
 			visibleHeading[0].position = entityShape.getPosition();
 			sf::Vector2f topLeft, topRight, bottomLeft, bottomRight;
 			
-			topLeft = sf::Vector2f(entityShape.getPosition().x - (entityShape.getSize().x / 3),
-								   entityShape.getPosition().y - (entityShape.getSize().y / 3));
-			topRight = sf::Vector2f(entityShape.getPosition().x + (entityShape.getSize().x / 3),
-									entityShape.getPosition().y - (entityShape.getSize().y / 3));
-			bottomLeft = sf::Vector2f(entityShape.getPosition().x - (entityShape.getSize().x / 3),
-									  entityShape.getPosition().y + (entityShape.getSize().y / 3));
-			bottomRight = sf::Vector2f(entityShape.getPosition().x + (entityShape.getSize().x / 3),
-									   entityShape.getPosition().y + (entityShape.getSize().y / 3));
+			topLeft = sf::Vector2f(entityShape.getPosition().x - (entityShape.getSize().x * 1.5),
+								   entityShape.getPosition().y - (entityShape.getSize().y * 1.5));
+			topRight = sf::Vector2f(entityShape.getPosition().x + (entityShape.getSize().x * 1.5),
+									entityShape.getPosition().y - (entityShape.getSize().y * 1.5));
+			bottomLeft = sf::Vector2f(entityShape.getPosition().x - (entityShape.getSize().x * 1.5),
+									  entityShape.getPosition().y + (entityShape.getSize().y * 1.5));
+			bottomRight = sf::Vector2f(entityShape.getPosition().x + (entityShape.getSize().x * 1.5),
+									   entityShape.getPosition().y + (entityShape.getSize().y * 1.5));
 
 			if (entities.at(i)->getDirection() == Entity::UP)
 			{
@@ -154,6 +271,27 @@ bool Game::checkDistance(const Vec2i position, const Vec2i positionToCheck, cons
 	float distanceAway = sqrt(pointX + pointY);
 
 	if (distanceAway <= distance)
+		return true;
+
+	return false;
+}
+
+bool Game::willCollide(const Vec2i distance, Entity::DIRECTIONS moveNext)
+{
+	//1,1 left top
+	//-1,-1 right bottom
+
+	//Check if moving right
+	if (distance.x == 1 && distance.y == 0 && moveNext == Entity::RIGHT)
+		return true;
+	//Check if moving left
+	else if (distance.x == -1 && distance.y == 0 && moveNext == Entity::LEFT)
+		return true;
+	//Check if moving up
+	else if (distance.x == 0 && distance.y == -1 && moveNext == Entity::UP)
+		return true;
+	//Check if moving down
+	else if (distance.x == 0 && distance.y == 1 && moveNext == Entity::DOWN)
 		return true;
 
 	return false;

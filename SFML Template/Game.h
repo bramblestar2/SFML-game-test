@@ -4,6 +4,7 @@
 #include <vector>
 #include "CustomView.h"
 #include "Player.h"
+#include "Block.h"
 
 class Game
 {
@@ -21,7 +22,8 @@ private:
 	CustomView camera;
 
 	std::vector<Entity*> entities;
-	Player player;
+	std::vector<Block*> blocks;
+	int selectedBlockID;
 	
 	sf::RectangleShape a;
 
@@ -29,5 +31,6 @@ private:
 
 	//Returns true if positionToCheck is in distance of position
 	bool checkDistance(const Vec2i position, const Vec2i positionToCheck, const float distance);
+	bool willCollide(const Vec2i distance, Entity::DIRECTIONS moveNext);
 };
 

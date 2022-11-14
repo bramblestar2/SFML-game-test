@@ -25,7 +25,7 @@ void Window::run()
 
 void Window::render()
 {
-	window->clear();
+	window->clear(sf::Color(10,10,10));
 
 	game.render();
 
@@ -61,6 +61,6 @@ void Window::updateSFMLEvents()
 
 void Window::initWindow()
 {
-	window = new sf::RenderWindow(sf::VideoMode(400, 400), "Game Test", sf::Style::Default);
+	window = new sf::RenderWindow(sf::VideoMode(600, 400), "Game Test", sf::Style::Default);
 	window->setFramerateLimit(60);
 }
