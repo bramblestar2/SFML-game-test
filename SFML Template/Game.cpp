@@ -35,11 +35,12 @@ void Game::update(const double _DT)
 		for (int i = 0; i < entities.size(); i++)
 		{
 			entities.at(i)->update(_DT);
+			handleActions(entities.at(i));
 
 			bool canMove = true;
 			for (int k = 0; k < blocks.size(); k++)
 			{
-				bool inDistanceOne = checkDistance(entities.at(i)->getPosition(), blocks.at(k)->getPosition(), 20.f);
+				bool inDistanceOne = checkDistance(entities.at(i)->getPosition(), blocks.at(k)->getPosition(), 10.f);
 				
 				if (inDistanceOne)
 				{
@@ -49,6 +50,8 @@ void Game::update(const double _DT)
 					int yDistance = blocks.at(k)->getPosition().y - entities.at(i)->getPosition().y;
 					float distance = sqrt(pow(xDistance, 2) + pow(yDistance, 2));
 					
+					//Brightness of block
+					//Uses the distance from the player
 					if (blocks.at(k)->getID().id == 0)
 						blocks.at(k)->changeBrightness((1 / distance) * 100);
 					else if (blocks.at(k)->getID().id == 1)
@@ -56,10 +59,6 @@ void Game::update(const double _DT)
 
 					if (inDistanceTwo)
 					{
-
-						//Brightness of block
-						//Uses the distance from the player
-
 						if (canMove && blocks.at(k)->getID().id != 1)
 						{
 							Entity::DIRECTIONS dir = Entity::UP;
@@ -142,8 +141,6 @@ void Game::updateSFMLEvents(sf::Event event, const double _DT)
 				for (int i = 0; i < blocks.size() && canPlace; i++)
 				{
 					canPlace = !(blocks.at(i)->getPosition() == point);
-					for (int k = 0; k < entities.size() && canPlace; k++)
-						canPlace = !(entities.at(k)->getPosition() == point);
 				}
 
 				if (canPlace)
@@ -174,6 +171,9 @@ void Game::render()
 {
 	if (window != nullptr)
 	{
+		/// 
+		///		Render blocks
+		/// 
 		for (int i = 0; i < blocks.size(); i++)
 		{
 			sf::RectangleShape blockShape;
@@ -189,11 +189,12 @@ void Game::render()
 				blocks.at(i)->getID().color.z
 			));
 
-
-
 			window->draw(blockShape);
 		}
 
+		/// 
+		///		Render entities
+		/// 
 		for (int i = 0; i < entities.size(); i++)
 		{
 			sf::RectangleShape entityShape;
@@ -212,6 +213,10 @@ void Game::render()
 
 
 			window->draw(entityShape);
+
+			/// 
+			///		Draw where the entity is looking
+			/// 
 
 			sf::VertexArray visibleHeading(sf::TriangleFan, 3);
 			for (int i = 0; i < 3; i++)
@@ -262,6 +267,14 @@ void Game::render()
 			window->draw(visibleHeading);
 		}
 	}
+}
+
+void Game::handleActions(Entity* entity)
+{
+	//while (entity->getActionHandler().poll_events())
+	//{
+	//	std::cout << (entity->getActionHandler().getEvent() == ACTIONS::DIRECTION_CHANGE) << std::endl;
+	//}
 }
 
 bool Game::checkDistance(const Vec2i position, const Vec2i positionToCheck, const float distance)

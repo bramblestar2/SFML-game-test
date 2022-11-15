@@ -17,7 +17,7 @@ public:
 	
 	virtual void update();
 	bool isBroken();
-	void changeBrightness(const float value);
+	virtual void changeBrightness(const float value);
 
 	void HSVtoRGB(float H, float S, float V, float& R, float& G, float& B);
 protected:

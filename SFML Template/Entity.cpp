@@ -2,6 +2,7 @@
 
 Entity::Entity()
 {
+	dir = UP;
 }
 
 Entity::~Entity()
@@ -19,6 +20,13 @@ void Entity::update(const double _DT)
 
 void Entity::updateActions()
 {
+}
+
+void Entity::setChunkPosition()
+{
+	//20 x 20 chunks
+	chunkPosition.x = position.x / 10;
+	chunkPosition.y = position.y / 10;
 }
 
 void Entity::movement(const double _DT)

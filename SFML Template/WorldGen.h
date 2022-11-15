@@ -15,6 +15,7 @@ private:
 	int genSeed;
 	int worldSizeX, worldSizeY;
 
-
+	float* fNoiseSeed1d = nullptr;
+	float* fPerlinNoise1D = nullptr;
 };
 

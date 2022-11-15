@@ -19,6 +19,8 @@ public:
 	void render();
 
 private:
+	void handleActions(Entity*);
+
 	CustomView camera;
 
 	std::vector<Entity*> entities;

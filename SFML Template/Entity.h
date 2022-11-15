@@ -12,8 +12,9 @@ public:
 	ID getID() const { return entityID; }
 	Vec2i getVelocity() const { return velocity; }
 	Vec2i getPosition() const { return position; }
+	Vec2i getChunkPosition() const { return chunkPosition; }
 	int getDirection() const { return dir; }
-	ActionHandler getActionHandler() const { return actionHandler; }
+	ActionHandler getActionHandler() { return actionHandler; }
 
 	//Sets
 	void setVelocity(Vec2i _vel) { velocity = _vel; }
@@ -31,6 +32,7 @@ protected:
 	//Sets
 	void setID(ID _ID) { entityID = _ID; }
 	void setHeading(DIRECTIONS a) { dir = a; }
+	void setChunkPosition();
 	void move(Vec2i a) { position += a; }
 
 	ActionHandler actionHandler;
@@ -42,5 +44,6 @@ private:
 	int dir;
 	Vec2i velocity;
 	Vec2i position;
+	Vec2i chunkPosition;
 	ID entityID;
 };

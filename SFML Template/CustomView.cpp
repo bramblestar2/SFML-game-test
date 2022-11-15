@@ -22,7 +22,6 @@ CustomView::~CustomView()
 
 void CustomView::update(const double _DT)
 {
-
 	if (transition)
 		view.setCenter(lerp(view.getCenter().x, toPosition.x, transitionSpeed),
 			lerp(view.getCenter().y, toPosition.y, transitionSpeed));
