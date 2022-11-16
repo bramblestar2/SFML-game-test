@@ -14,7 +14,7 @@ public:
 	Vec2i getPosition() const { return position; }
 	Vec2i getChunkPosition() const { return chunkPosition; }
 	int getDirection() const { return dir; }
-	ActionHandler getActionHandler() { return actionHandler; }
+	ActionHandler *getActionHandler() { return &actionHandler; }
 
 	//Sets
 	void setVelocity(Vec2i _vel) { velocity = _vel; }
@@ -28,6 +28,7 @@ public:
 	
 protected:
 	//Gets
+	Vec2i getPrevChunkPos() const { return prevChunkPosition; }
 
 	//Sets
 	void setID(ID _ID) { entityID = _ID; }
@@ -45,5 +46,6 @@ private:
 	Vec2i velocity;
 	Vec2i position;
 	Vec2i chunkPosition;
+	Vec2i prevChunkPosition;
 	ID entityID;
 };

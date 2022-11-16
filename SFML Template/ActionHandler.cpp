@@ -1,6 +1,6 @@
 #include "ActionHandler.h"
 
-bool ActionHandler::poll_events(ActionHandler a)
+bool ActionHandler::poll_events(ActionHandler& a)
 {
 	bool empty = a.actionEvents.empty();
 	if (!empty)

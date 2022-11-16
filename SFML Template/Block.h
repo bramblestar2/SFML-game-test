@@ -32,5 +32,12 @@ private:
 	//0.5 : Half broken ...
 	//1 : Broken
 	float breakPercentage;
+
+	friend std::fstream& operator<<(std::fstream& a, const Block& block)
+	{
+		a << block.getID() << " " << block.getPosition().x << " " 
+		  << block.getPosition().y << " " << block.breakPercentage;
+		return a;
+	}
 };
 

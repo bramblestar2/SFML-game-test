@@ -27,6 +27,12 @@ void Entity::setChunkPosition()
 	//20 x 20 chunks
 	chunkPosition.x = position.x / 10;
 	chunkPosition.y = position.y / 10;
+
+	if (prevChunkPosition != chunkPosition)
+	{
+		actionHandler.push_back(ACTIONS::ENTERED_NEW_CHUNK);
+		prevChunkPosition = chunkPosition;
+	}
 }
 
 void Entity::movement(const double _DT)

@@ -80,22 +80,18 @@ void Player::movement(const double _DT)
 {
 	if (sf::Keyboard::isKeyPressed(KEY_UP))
 	{
-		Entity::newAction(ACTIONS::DIRECTION_CHANGE);
 		Entity::setHeading(DIRECTIONS::UP);
 	}
 	else if (sf::Keyboard::isKeyPressed(KEY_DOWN))
 	{
-		Entity::newAction(ACTIONS::DIRECTION_CHANGE);
 		Entity::setHeading(DIRECTIONS::DOWN);
 	}
 	else if (sf::Keyboard::isKeyPressed(KEY_LEFT))
 	{
-		Entity::newAction(ACTIONS::DIRECTION_CHANGE);
 		Entity::setHeading(DIRECTIONS::LEFT);
 	}
 	else if (sf::Keyboard::isKeyPressed(KEY_RIGHT))
 	{
-		Entity::newAction(ACTIONS::DIRECTION_CHANGE);
 		Entity::setHeading(DIRECTIONS::RIGHT);
 	}
 

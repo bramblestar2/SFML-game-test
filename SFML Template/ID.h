@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 
 template<typename T>
 struct Vec2
@@ -18,6 +19,17 @@ struct Vec2
 	bool operator==(const Vec2& right) {
 		return	this->x == right.x &&
 			this->y == right.y;
+	}
+
+	bool operator!=(const Vec2& right) {
+		return	this->x != right.x ||
+			this->y != right.y;
+	}
+
+	friend std::fstream& operator<<(std::fstream& a, const Vec2& vec)
+	{
+		a << vec.x << " " << vec.y;
+		return a;
 	}
 };
 
@@ -40,6 +52,12 @@ public:
 		this->z += right.z;
 		return *this;
 	}
+
+	friend std::fstream& operator<<(std::fstream& a, const Vec3& vec)
+	{
+		a << vec.x << " " << vec.y << " " << vec.z;
+		return a;
+	}
 };
 
 typedef Vec3<float> Vec3f;
@@ -59,5 +77,11 @@ public:
 	std::string getType() const { return type; }
 private:
 	std::string type;
+
+	friend std::fstream& operator<<(std::fstream& a, const ID& id)
+	{
+		a << id.type << " " << id.id << " " << id.color.x << " " << id.color.y << " " << id.color.z;
+		return a;
+	}
 };
 

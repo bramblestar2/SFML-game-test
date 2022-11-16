@@ -1,12 +1,37 @@
 #include "Game.h"
 #include <math.h>
+#include <time.h>
+//c++20
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 Game::Game()
 {
+	srand(time(NULL));
+
 	window = nullptr;
 
 	entities.push_back(new Player());
+	//((Player*)entities.at(0))->setMovementKeys(sf::Keyboard::Up, sf::Keyboard::Down, sf::Keyboard::Left, sf::Keyboard::Right);
 	selectedBlockID = 0;
+
+	for (int i = -40; i < 40; i++)
+	{
+		for (int k = -40; k < 40; k++)
+		{
+			float something = cos(i*k*rand()) + sin(k-i*rand());
+			if (something > 1.f)
+				selectedBlockID = 0;
+			else
+				selectedBlockID = 1;
+
+			if (selectedBlockID == 0)
+				placeBlock(Vec2i(i, k));
+		}
+	}
+
+	chunkLoader();
 }
 
 Game::~Game()
@@ -136,32 +161,11 @@ void Game::updateSFMLEvents(sf::Event event, const double _DT)
 
 			if (event.mouseButton.button == sf::Mouse::Left)
 			{
-				bool canPlace = true;
-				
-				for (int i = 0; i < blocks.size() && canPlace; i++)
-				{
-					canPlace = !(blocks.at(i)->getPosition() == point);
-				}
-
-				if (canPlace)
-				{
-					blocks.push_back(new Block(point));
-					ID id = blocks.at(blocks.size() - 1)->getID();
-					id.id = selectedBlockID;
-					blocks.at(blocks.size() - 1)->setID(id);
-				}
+				placeBlock(point);
 			}
 			else if (event.mouseButton.button == sf::Mouse::Right)
 			{
-				for (int i = 0; i < blocks.size(); i++)
-				{
-					if (blocks.at(i)->getPosition() == point)
-					{
-						delete blocks.at(i);
-						blocks.erase(blocks.begin() + i);
-						break;
-					}
-				}
+				destroyBlock(point);
 			}
 		}
 	}
@@ -271,10 +275,114 @@ void Game::render()
 
 void Game::handleActions(Entity* entity)
 {
-	//while (entity->getActionHandler().poll_events())
-	//{
-	//	std::cout << (entity->getActionHandler().getEvent() == ACTIONS::DIRECTION_CHANGE) << std::endl;
-	//}
+	while (entity->getActionHandler()->poll_events())
+	{
+		ACTIONS event = entity->getActionHandler()->getEvent();
+		
+		if (event == ACTIONS::ENTERED_NEW_CHUNK)
+		{
+			Vec2i chunkPos = entity->getChunkPosition();
+			std::cout << "Entity (Type: " << entity->getID().getType() << ") entered new chunk <"
+					  << chunkPos.x << ", " << chunkPos.y << ">" << std::endl;
+		}
+
+		if (event == ACTIONS::ATTACK)
+		{
+			std::cout << "Entity (Type: " << entity->getID().getType() << ") has attacked" << std::endl;
+		}
+		if (event == ACTIONS::BREAK)
+		{
+			std::cout << "Entity (Type: " << entity->getID().getType() << ") is mining" << std::endl;
+		}
+		if (event == ACTIONS::PLACED_BLOCK)
+		{
+			std::cout << "Entity (Type: " << entity->getID().getType() << ") placed a block" << std::endl;
+		}
+	}
+}
+
+bool Game::placeBlock(Vec2i position)
+{
+	bool placed = false;
+	
+	bool canPlace = true;
+
+	for (int i = 0; i < blocks.size() && canPlace; i++)
+	{
+		canPlace = !(blocks.at(i)->getPosition() == position);
+	}
+
+	if (canPlace)
+	{
+		blocks.push_back(new Block(position));
+		ID id = blocks.at(blocks.size() - 1)->getID();
+		id.id = selectedBlockID;
+		blocks.at(blocks.size() - 1)->setID(id);
+		placed = true;
+	}
+	
+
+	return placed;
+}
+
+bool Game::destroyBlock(Vec2i position)
+{
+	bool destroyed = false;
+	for (int i = 0; i < blocks.size(); i++)
+	{
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			if (blocks.at(i)->getPosition() == position)
+			{
+				delete blocks.at(i);
+				blocks.erase(blocks.begin() + i);
+				break;
+			}
+		}
+	}
+
+	return destroyed;
+}
+
+void Game::chunkLoader()
+{
+	std::string worldDir = fs::current_path().string() + "\\World\\";
+	std::vector<int> players;
+	for (int i = 0; i < entities.size(); i++)
+	{
+		if (entities.at(i)->getID().getType() == "Player")
+			players.push_back(i);
+	}
+
+	//fs::is_directory
+	if (fs::is_directory(worldDir))
+	{
+		std::cout << "Directory exists" << std::endl;
+		for (int i = 0; i < players.size(); i++)
+		{
+			Player* player = (Player*)entities.at(players.at(i));
+			std::string chunk = std::to_string(player->getChunkPosition().x) + "," + 
+								std::to_string(player->getChunkPosition().y);
+
+			std::cout << chunk << std::endl;
+		}
+
+		
+	}
+	else
+	{
+		fs::create_directory(worldDir);
+	}
+}
+
+void Game::loadChunk(Vec2i)
+{
+}
+
+void Game::saveChunkData()
+{
+	
+	//std::fstream saveData("", std::ios::app);
 }
 
 bool Game::checkDistance(const Vec2i position, const Vec2i positionToCheck, const float distance)
