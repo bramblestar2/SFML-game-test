@@ -42,7 +42,6 @@ private:
 
 	ACTIONS currentEvent;
 
-
 	std::vector<ACTIONS> actionEvents;
 };
 

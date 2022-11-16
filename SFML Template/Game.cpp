@@ -296,6 +296,23 @@ void Game::handleActions(Entity* entity)
 		}
 		if (event == ACTIONS::PLACED_BLOCK)
 		{
+			Entity::DIRECTIONS directions = (Entity::DIRECTIONS)entity->getDirection();
+			if (directions == Entity::UP)
+			{
+				placeBlock(Vec2i(entity->getPosition().x, entity->getPosition().y-1));
+			}
+			else if (directions == Entity::DOWN)
+			{
+				placeBlock(Vec2i(entity->getPosition().x, entity->getPosition().y+1));
+			}
+			else if (directions == Entity::LEFT)
+			{
+				placeBlock(Vec2i(entity->getPosition().x-1, entity->getPosition().y));
+			}
+			else if (directions == Entity::RIGHT)
+			{
+				placeBlock(Vec2i(entity->getPosition().x+1, entity->getPosition().y));
+			}
 			std::cout << "Entity (Type: " << entity->getID().getType() << ") placed a block" << std::endl;
 		}
 	}
