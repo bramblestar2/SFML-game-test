@@ -28,8 +28,11 @@ Game::Game()
 
 			if (selectedBlockID == 0)
 				placeBlock(Vec2i(i, k));
+			else if (selectedBlockID == 1)
+				placeBlock(Vec2i(i, k));
 		}
 	}
+	selectedBlockID = 0;
 
 	chunkLoader();
 }
@@ -54,78 +57,81 @@ void Game::update(const double _DT)
 {
 	if (window != nullptr)
 	{
-		camera.update(_DT);
-		window->setView(camera.getView());
-
-		for (int i = 0; i < entities.size(); i++)
+		if (window->hasFocus())
 		{
-			entities.at(i)->update(_DT);
-			handleActions(entities.at(i));
+			camera.update(_DT);
+			window->setView(camera.getView());
 
-			bool canMove = true;
-			for (int k = 0; k < blocks.size(); k++)
+			for (int i = 0; i < entities.size(); i++)
 			{
-				bool inDistanceOne = checkDistance(entities.at(i)->getPosition(), blocks.at(k)->getPosition(), 10.f);
-				
-				if (inDistanceOne)
+				entities.at(i)->update(_DT);
+				handleActions(entities.at(i));
+
+				bool canMove = true;
+				for (int k = 0; k < blocks.size(); k++)
 				{
-					bool inDistanceTwo = checkDistance(entities.at(i)->getPosition(), blocks.at(k)->getPosition(), 5.f);
+					bool inDistanceOne = checkDistance(entities.at(i)->getPosition(), blocks.at(k)->getPosition(), 10.f);
 
-					int xDistance = blocks.at(k)->getPosition().x - entities.at(i)->getPosition().x;
-					int yDistance = blocks.at(k)->getPosition().y - entities.at(i)->getPosition().y;
-					float distance = sqrt(pow(xDistance, 2) + pow(yDistance, 2));
-					
-					//Brightness of block
-					//Uses the distance from the player
-					if (blocks.at(k)->getID().id == 0)
-						blocks.at(k)->changeBrightness((1 / distance) * 100);
-					else if (blocks.at(k)->getID().id == 1)
-						blocks.at(k)->changeBrightness((1/distance) * 30);
-
-					if (inDistanceTwo)
+					if (inDistanceOne)
 					{
-						if (canMove && blocks.at(k)->getID().id != 1)
-						{
-							Entity::DIRECTIONS dir = Entity::UP;
-							if (entities.at(i)->getDirection() == Entity::UP)
-								dir = Entity::UP;
-							else if (entities.at(i)->getDirection() == Entity::DOWN)
-								dir = Entity::DOWN;
-							else if (entities.at(i)->getDirection() == Entity::LEFT)
-								dir = Entity::LEFT;
-							else if (entities.at(i)->getDirection() == Entity::RIGHT)
-								dir = Entity::RIGHT;
+						bool inDistanceTwo = checkDistance(entities.at(i)->getPosition(), blocks.at(k)->getPosition(), 1.f);
 
-							canMove = !willCollide(Vec2i(xDistance, yDistance), dir);
+						int xDistance = blocks.at(k)->getPosition().x - entities.at(i)->getPosition().x;
+						int yDistance = blocks.at(k)->getPosition().y - entities.at(i)->getPosition().y;
+						float distance = sqrt(pow(xDistance, 2) + pow(yDistance, 2));
+
+						//Brightness of block
+						//Uses the distance from the player
+						if (blocks.at(k)->getID().id == 0)
+							blocks.at(k)->changeBrightness((1 / distance) * 100);
+						else if (blocks.at(k)->getID().id == 1)
+							blocks.at(k)->changeBrightness((1 / distance) * 30);
+
+						if (inDistanceTwo)
+						{
+							if (canMove && blocks.at(k)->getID().id != 1)
+							{
+								Entity::DIRECTIONS dir = Entity::UP;
+								if (entities.at(i)->getDirection() == Entity::UP)
+									dir = Entity::UP;
+								else if (entities.at(i)->getDirection() == Entity::DOWN)
+									dir = Entity::DOWN;
+								else if (entities.at(i)->getDirection() == Entity::LEFT)
+									dir = Entity::LEFT;
+								else if (entities.at(i)->getDirection() == Entity::RIGHT)
+									dir = Entity::RIGHT;
+
+								canMove = !willCollide(Vec2i(xDistance, yDistance), dir);
+							}
 						}
 					}
 				}
+				if (canMove)
+					entities.at(i)->updatePosition(_DT);
+
+				if (entities.at(i)->getID().getType() == "Player")
+				{
+					Vec2i pos = entities.at(i)->getPosition();
+					camera.moveTo(sf::Vector2f(pos.x * 20, pos.y * 20));
+				}
+
+
+				//Check the type and update accordingly
+				//for (int k = 0; k < entities.size(); k++)
+				//{
+				//	if (k != i)
+				//	{
+				//		if (entities.at(k)->getID().getType() == "Player")
+				//		{
+				//			
+				//		}
+				//		else if (entities.at(k)->getID().getType() == "Enemy")
+				//		{
+				//
+				//		}
+				//	}
+				//}
 			}
-			if (canMove)
-				entities.at(i)->updatePosition(_DT);
-
-			if (entities.at(i)->getID().getType() == "Player")
-			{
-				Vec2i pos = entities.at(i)->getPosition();
-				camera.moveTo(sf::Vector2f(pos.x * 20, pos.y * 20));
-			}
-
-
-			//Check the type and update accordingly
-			//for (int k = 0; k < entities.size(); k++)
-			//{
-			//	if (k != i)
-			//	{
-			//		if (entities.at(k)->getID().getType() == "Player")
-			//		{
-			//			
-			//		}
-			//		else if (entities.at(k)->getID().getType() == "Enemy")
-			//		{
-			//
-			//		}
-			//	}
-			//}
 		}
 	}
 }
