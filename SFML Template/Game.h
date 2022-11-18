@@ -48,5 +48,7 @@ private:
 	bool checkDistance(const Vec2i position, const Vec2i positionToCheck, const float distance);
 	bool willCollide(const Vec2i distance, Entity::DIRECTIONS moveNext);
 	int blockInFrontEntity(const Vec2i distance, Entity::DIRECTIONS moveNext);
+
+	void deleteBlock(int);
 };
 

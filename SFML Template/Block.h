@@ -18,6 +18,8 @@ public:
 	virtual void update();
 	bool isBroken();
 	virtual void changeBrightness(const float value);
+	//Returns remaining dmg
+	float damage(float);
 
 	void HSVtoRGB(float H, float S, float V, float& R, float& G, float& B);
 protected:

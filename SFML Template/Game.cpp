@@ -298,16 +298,29 @@ void Game::handleActions(Entity* entity)
 		}
 		if (event == ACTIONS::BREAK)
 		{
-			Entity::DIRECTIONS directions = (Entity::DIRECTIONS)entity->getDirection();
+			float breakAmount = 0.1f;
 
-			if (directions == Entity::UP)
-				destroyBlock(Vec2i(entity->getPosition().x, entity->getPosition().y - 1));
-			else if (directions == Entity::DOWN)
-				destroyBlock(Vec2i(entity->getPosition().x, entity->getPosition().y + 1));
-			else if (directions == Entity::LEFT)
-				destroyBlock(Vec2i(entity->getPosition().x - 1, entity->getPosition().y));
-			else if (directions == Entity::RIGHT)
-				destroyBlock(Vec2i(entity->getPosition().x + 1, entity->getPosition().y));
+			Entity::DIRECTIONS directions = (Entity::DIRECTIONS)entity->getDirection();
+			Vec2i pos = entity->getPosition();
+			for (int i = 0; i < blocks.size(); i++)
+			{
+				Vec2i blockPos = blocks.at(i)->getPosition();
+				if (directions == Entity::UP)
+					if (pos.x == blockPos.x && pos.y - 1 == blockPos.y)
+						blocks.at(i)->damage(breakAmount);
+				else if (directions == Entity::DOWN)
+					if (pos.x == blockPos.x && pos.y + 1 == blockPos.y)
+						blocks.at(i)->damage(breakAmount);
+				else if (directions == Entity::LEFT)
+					if (pos.x - 1 == blockPos.x && pos.y == blockPos.y)
+						blocks.at(i)->damage(breakAmount);
+				else if (directions == Entity::RIGHT)
+					if (pos.x + 1== blockPos.x && pos.y == blockPos.y)
+						blocks.at(i)->damage(breakAmount);
+
+				if (blocks.at(i)->isBroken())
+					deleteBlock(i);
+			}
 
 			std::cout << "Entity (Type: " << entity->getID().getType() << ") is mining" << std::endl;
 		}
@@ -444,4 +457,10 @@ bool Game::willCollide(const Vec2i distance, Entity::DIRECTIONS moveNext)
 		return true;
 
 	return false;
+}
+
+void Game::deleteBlock(int pos)
+{
+	delete blocks.at(pos);
+	blocks.erase(blocks.begin() + pos);
 }

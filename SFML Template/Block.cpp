@@ -40,6 +40,7 @@ bool Block::isBroken()
 	if (breakPercentage == 1.f)
 	{
 		id.color = Vec3f(70,70,70);
+		std::cout << "A";
 		return true;
 	}
 
@@ -53,6 +54,13 @@ void Block::changeBrightness(const float value)
 		id.color = Vec3f(10, 10, 10);
 	else
 	HSVtoRGB(1, 1, value, id.color.x, id.color.y, id.color.z);
+}
+
+float Block::damage(float dmg)
+{
+	breakPercentage += dmg;
+	std::cout << "DMG - " << dmg << std::endl;
+	return breakPercentage;
 }
 
 void Block::HSVtoRGB(float H, float S, float V, float& R, float& G, float& B) {
