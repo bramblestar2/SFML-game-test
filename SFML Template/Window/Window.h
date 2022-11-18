@@ -16,6 +16,7 @@ public:
 	void updateSFMLEvents();
 private:
 	void initWindow();
+	void menu();
 	
 	sf::Clock dtClock;
 	double dt;

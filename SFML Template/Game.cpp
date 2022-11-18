@@ -16,9 +16,9 @@ Game::Game()
 	//((Player*)entities.at(0))->setMovementKeys(sf::Keyboard::Up, sf::Keyboard::Down, sf::Keyboard::Left, sf::Keyboard::Right);
 	selectedBlockID = 0;
 
-	for (int i = -40; i < 40; i++)
+	for (int i = -10; i < 10; i++)
 	{
-		for (int k = -40; k < 40; k++)
+		for (int k = -10; k < 10; k++)
 		{
 			float something = cos(i*k*rand()) + sin(k-i*rand());
 			if (something > 1.f)
@@ -28,8 +28,8 @@ Game::Game()
 
 			if (selectedBlockID == 0)
 				placeBlock(Vec2i(i, k));
-			else if (selectedBlockID == 1)
-				placeBlock(Vec2i(i, k));
+			//else if (selectedBlockID == 1)
+			//	placeBlock(Vec2i(i, k));
 		}
 	}
 	selectedBlockID = 0;
@@ -298,27 +298,32 @@ void Game::handleActions(Entity* entity)
 		}
 		if (event == ACTIONS::BREAK)
 		{
+			Entity::DIRECTIONS directions = (Entity::DIRECTIONS)entity->getDirection();
+
+			if (directions == Entity::UP)
+				destroyBlock(Vec2i(entity->getPosition().x, entity->getPosition().y - 1));
+			else if (directions == Entity::DOWN)
+				destroyBlock(Vec2i(entity->getPosition().x, entity->getPosition().y + 1));
+			else if (directions == Entity::LEFT)
+				destroyBlock(Vec2i(entity->getPosition().x - 1, entity->getPosition().y));
+			else if (directions == Entity::RIGHT)
+				destroyBlock(Vec2i(entity->getPosition().x + 1, entity->getPosition().y));
+
 			std::cout << "Entity (Type: " << entity->getID().getType() << ") is mining" << std::endl;
 		}
 		if (event == ACTIONS::PLACED_BLOCK)
 		{
 			Entity::DIRECTIONS directions = (Entity::DIRECTIONS)entity->getDirection();
+
 			if (directions == Entity::UP)
-			{
 				placeBlock(Vec2i(entity->getPosition().x, entity->getPosition().y-1));
-			}
 			else if (directions == Entity::DOWN)
-			{
 				placeBlock(Vec2i(entity->getPosition().x, entity->getPosition().y+1));
-			}
 			else if (directions == Entity::LEFT)
-			{
 				placeBlock(Vec2i(entity->getPosition().x-1, entity->getPosition().y));
-			}
 			else if (directions == Entity::RIGHT)
-			{
 				placeBlock(Vec2i(entity->getPosition().x+1, entity->getPosition().y));
-			}
+
 			std::cout << "Entity (Type: " << entity->getID().getType() << ") placed a block" << std::endl;
 		}
 	}
